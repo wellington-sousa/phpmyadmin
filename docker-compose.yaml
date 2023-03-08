@@ -1,0 +1,38 @@
+version: '3.1'
+
+volumes:
+  mariadb_vol:
+
+
+networks:
+  mariadb_net:
+    driver: bridge
+
+services:
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+        PMA_HOST: mariadb
+    restart: always
+    ports:
+      - 8080:80
+    networks:
+      - mariadb_net    
+    volumes:
+      - /sessions
+      - ~/docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - /custom/phpmyadmin/theme/:/www/themes/theme/
+
+  mariadb:
+    image: mariadb:10.10
+    ports:
+      - 3306:3306
+    networks:
+      - mariadb_net
+    volumes:
+      - mariadb_vol:/data/db
+    environment:
+      MARIADB_USER: mariauser
+      MARIADB_PASSWORD: mariapwd
+      MARIADB_ROOT_PASSWORD: mariaroot
